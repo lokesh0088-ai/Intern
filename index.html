@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCB Manitoba Document Generator</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Serif font for the PDF preview (Times-like) and Sans-serif for the editor UI -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- App Header Toolbar (Simple, clean, standard UI) -->
+  <header class="app-header no-print">
+    <div class="header-logo-title">
+      <div id="wcb-brand-logo" class="brand-logo-small"></div>
+      <h1>WCB Document System</h1>
+    </div>
+    <div class="header-controls">
+      <div class="control-group">
+        <label for="select-exercise">Exercise Document:</label>
+        <select id="select-exercise">
+          <option value="expense">Medical & Travel Expense Request (Ex 1)</option>
+          <option value="progress">Worker Progress Report (Ex 2)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="select-preset">Load Data State:</label>
+        <select id="select-preset">
+          <option value="original">Original PDF Matching Data</option>
+          <option value="minimal">Minimal Data (1 element)</option>
+          <option value="overflow">Extended Data (10+ elements - Auto Page Break)</option>
+        </select>
+      </div>
+      <button id="btn-print" class="btn-secondary">Print to PDF</button>
+    </div>
+  </header>
+
+  <!-- Main Grid Workspace -->
+  <main class="app-main">
+    
+    <!-- Left Pane: The Human-Style Editor Form -->
+    <section class="editor-pane no-print">
+      <h2>Document Editor</h2>
+      
+      <!-- Basic Claim Info (Common to both forms) -->
+      <fieldset class="form-section">
+        <legend>1. General Claim Details</legend>
+        <div class="form-grid-2">
+          <div class="field-item">
+            <label for="input-claimant-name">Claimant Full Name</label>
+            <input type="text" id="input-claimant-name" value="Madeleine Willson">
+          </div>
+          <div class="field-item">
+            <label for="input-claim-no">Claim Number</label>
+            <input type="text" id="input-claim-no" value="20042047">
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field-item">
+            <label for="input-app-id">Worker App ID</label>
+            <input type="text" id="input-app-id" value="712041">
+          </div>
+          <div class="field-item">
+            <label for="input-submit-date">Submission Date & Time</label>
+            <input type="text" id="input-submit-date" value="March 28, 2024 20:43">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- EXERCISE 1: EXPENSE REQUEST FORM EDITOR -->
+      <div id="form-expense-editor">
+        
+        <!-- Prescription Drugs Table Manager -->
+        <fieldset class="form-section">
+          <legend>2. Prescription Drugs</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-prescription">
+              <thead>
+                <tr>
+                  <th>Drug Name</th>
+                  <th>Prescription Date</th>
+                  <th>Date Purchased</th>
+                  <th>Healthcare Provider</th>
+                  <th>Paid Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="prescription">+ Add Drug</button>
+          </div>
+        </fieldset>
+
+        <!-- OTC Drugs Table Manager -->
+        <fieldset class="form-section">
+          <legend>3. Over-the-Counter Drugs</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-otc">
+              <thead>
+                <tr>
+                  <th>Drug Name</th>
+                  <th>Date Purchased</th>
+                  <th>Paid Amount</th>
+                  <th>Seller's Name</th>
+                  <th>Reason</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="otc">+ Add OTC Item</button>
+          </div>
+        </fieldset>
+
+        <!-- Bandages, Braces, or Supplies Table Manager -->
+        <fieldset class="form-section">
+          <legend>4. Bandages, Braces or Other Medical Supplies</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-supplies">
+              <thead>
+                <tr>
+                  <th>Item Purchased</th>
+                  <th>Date Purchased</th>
+                  <th>Prescribed?</th>
+                  <th>Healthcare Provider</th>
+                  <th>Paid Amount</th>
+                  <th>Seller's Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="supplies">+ Add Supply Item</button>
+          </div>
+        </fieldset>
+
+        <!-- Parking for Medical Appointments Table Manager -->
+        <fieldset class="form-section">
+          <legend>5. Parking for Medical Appointments</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-parking">
+              <thead>
+                <tr>
+                  <th>Address of Facility</th>
+                  <th>Date</th>
+                  <th>Paid Amount</th>
+                  <th>Meter Used?</th>
+                  <th>Meter Number</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="parking">+ Add Parking Claim</button>
+          </div>
+        </fieldset>
+
+        <!-- Mileage Table Manager -->
+        <fieldset class="form-section">
+          <legend>6. Mileage to Medical Appointments</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-mileage">
+              <thead>
+                <tr>
+                  <th>Appointment Date</th>
+                  <th>Address of Healthcare Facility</th>
+                  <th>Address of Workplace</th>
+                  <th>km (Round Trip)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="mileage">+ Add Mileage Claim</button>
+          </div>
+        </fieldset>
+
+        <!-- Bus or Taxi Table Manager -->
+        <fieldset class="form-section">
+          <legend>7. Bus or Taxi Fare for Medical Appointments</legend>
+          <div class="table-manager-wrapper">
+            <table class="editor-table" id="edit-table-bustaxi">
+              <thead>
+                <tr>
+                  <th>Appointment Date</th>
+                  <th>Address of Starting Point</th>
+                  <th>Address of Healthcare Facility</th>
+                  <th>Bus or Taxi</th>
+                  <th>Total Fare Paid</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <button class="btn-add-row" data-type="bustaxi">+ Add Fare Claim</button>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- EXERCISE 2: WORKER PROGRESS REPORT FORM EDITOR -->
+      <div id="form-progress-editor" style="display: none;">
+        
+        <!-- Return to Work Questions -->
+        <fieldset class="form-section">
+          <legend>2. Return to Work Details</legend>
+          <div class="field-item">
+            <label>Select one return status:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="rtw-status" value="missed"> I have not missed time from work</label>
+              <label><input type="radio" name="rtw-status" value="not-returned"> I have not returned to work</label>
+              <label><input type="radio" name="rtw-status" value="returned" checked> I returned to work on:</label>
+              <input type="text" id="rtw-return-date" class="inline-date" value="March 15, 2024">
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label>I am working:</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" id="rtw-work-duties-reg"> Full duties, regular hours</label>
+              <label><input type="checkbox" id="rtw-work-duties-red"> Full duties, reduced hours</label>
+              <label><input type="checkbox" id="rtw-work-modified-reg"> Modified duties, regular hours</label>
+              <label><input type="checkbox" id="rtw-work-modified-red" checked> Modified duties, reduced hours</label>
+              <label><input type="checkbox" id="rtw-work-other"> Other:</label>
+              <input type="text" id="rtw-work-other-text" class="inline-text" placeholder="Specify other...">
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label for="rtw-progress-desc">My return to work is going:</label>
+            <textarea id="rtw-progress-desc" rows="2">Terrible. Testing Testing</textarea>
+          </div>
+
+          <div class="field-item">
+            <label for="rtw-expect-return-date">I expect to return to work on:</label>
+            <input type="text" id="rtw-expect-return-date" value="">
+          </div>
+
+          <div class="field-item">
+            <label for="rtw-concerns">I have the following concerns about returning to work:</label>
+            <textarea id="rtw-concerns" rows="3"></textarea>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-item">
+              <label for="rtw-contact-name">I was most recently in contact with (Name):</label>
+              <input type="text" id="rtw-contact-name" value="">
+            </div>
+            <div class="field-item">
+              <label for="rtw-contact-date">On Date:</label>
+              <input type="text" id="rtw-contact-date" value="">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Recovery Questions -->
+        <fieldset class="form-section">
+          <legend>3. Recovery Status</legend>
+          <div class="field-item">
+            <label>Select recovery state:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="recovery-state" value="not-recovered"> I have not fully recovered from my workplace injury.</label>
+              <label><input type="radio" name="recovery-state" value="recovered" checked> I have fully recovered from my workplace injury.</label>
+            </div>
+          </div>
+          <div class="field-item">
+            <label for="recovery-comments">I have provided the following comments about my recovery:</label>
+            <textarea id="recovery-comments" rows="3"></textarea>
+          </div>
+        </fieldset>
+
+        <!-- Pain Rating and Treatments -->
+        <fieldset class="form-section">
+          <legend>4. Pain, Treatments & Medication</legend>
+          
+          <div class="field-item">
+            <label>I rate my current pain/discomfort on a scale of 1-10 (where 1 is no pain and 10 is severe pain):</label>
+            <div class="pain-scale-container">
+              <!-- Generate numbers 1 to 10 checkbox items -->
+              <div class="pain-inputs">
+                <label><input type="checkbox" id="pain-1"> 1</label>
+                <label><input type="checkbox" id="pain-2"> 2</label>
+                <label><input type="checkbox" id="pain-3"> 3</label>
+                <label><input type="checkbox" id="pain-4"> 4</label>
+                <label><input type="checkbox" id="pain-5"> 5</label>
+                <label><input type="checkbox" id="pain-6"> 6</label>
+                <label><input type="checkbox" id="pain-7"> 7</label>
+                <label><input type="checkbox" id="pain-8"> 8</label>
+                <label><input type="checkbox" id="pain-9"> 9</label>
+                <label><input type="checkbox" id="pain-10"> 10</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label>Treatment continuation:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="treatment-status" value="not-continuing" checked> I am not continuing to receive medical treatment for my workplace injury.</label>
+              <label><input type="radio" name="treatment-status" value="continuing"> I am continuing to receive medical treatment for my workplace injury from:</label>
+              <input type="text" id="treatment-provider-type" class="inline-text" placeholder="Medical Provider Type">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-item">
+              <label for="treatment-last-date">My last medical treatment was (Date):</label>
+              <input type="text" id="treatment-last-date" value="">
+            </div>
+            <div class="field-item">
+              <label for="treatment-last-provider">From (Provider Name):</label>
+              <input type="text" id="treatment-last-provider" value="">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="field-item">
+              <label for="treatment-next-date">My next medical treatment is (Date):</label>
+              <input type="text" id="treatment-next-date" value="">
+            </div>
+            <div class="field-item">
+              <label for="treatment-next-provider">From (Provider Name):</label>
+              <input type="text" id="treatment-next-provider" value="">
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label for="treatment-chiro-physio">I am attending a Chiropractor or Physiotherapist (Frequency):</label>
+            <input type="text" id="treatment-chiro-physio" placeholder="e.g. 2 times a week" value="">
+          </div>
+
+          <div class="field-item">
+            <label>Medication:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="medication-status" value="not-taking" checked> I am not taking medication for my workplace injury.</label>
+              <label><input type="radio" name="medication-status" value="taking"> I am taking medication for my workplace injury:</label>
+              <input type="text" id="medication-name" class="inline-text" placeholder="Name of prescribed medication">
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label>Home Exercises:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="exercises-status" value="not-doing" checked> I am not doing home exercises for my workplace injury.</label>
+              <label><input type="radio" name="exercises-status" value="doing"> I am doing home exercises for my workplace injury.</label>
+            </div>
+          </div>
+
+          <div class="field-item">
+            <label for="exercises-list">List the exercises you are doing:</label>
+            <textarea id="exercises-list" rows="2"></textarea>
+          </div>
+
+          <div class="field-item">
+            <label for="additional-info">I would like to provide the following additional information about my claim/injury:</label>
+            <textarea id="additional-info" rows="2">No info Testing Testing</textarea>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- Right Pane: Real-time, exact A4 Page Print Preview -->
+    <section class="preview-pane">
+      <div class="preview-header no-print">
+        <span>PDF PRINT PREVIEW (A4 PAGE WIDTH)</span>
+        <span class="preview-tip">Calculates page heights and wraps columns automatically.</span>
+      </div>
+      
+      <!-- Container where pages will be dynamically rendered by app.js -->
+      <div id="preview-container">
+        <!-- Rendered A4 .pdf-page structures will go here -->
+      </div>
+    </section>
+  </main>
+
+
+
+  <!-- Scripts -->
+  <script src="logo-svg.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
