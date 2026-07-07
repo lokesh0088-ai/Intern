@@ -1,3 +1,4 @@
+here is my video link https://youtu.be/Vg9xLW5LumY?si=XQ7oSDdGyZIeKn_J
 # Workers Compensation Board of Manitoba - Dynamic Document Generator
 
 A high-fidelity, web-based document generation tool built to replicate official Workers Compensation Board (WCB) of Manitoba reports. It implements Exercise 1 (Medical & Travel Expense Request) and Exercise 2 (Worker Progress Report) with strict visual accuracy, dynamic data binding, client-side auto-pagination, and an automated presentation system.
